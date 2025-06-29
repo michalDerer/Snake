@@ -1,3 +1,5 @@
+# DEFAULT CMAKE IGNORE FROM GITHUB
+
 CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles
@@ -17,3 +19,10 @@ CMakeUserPresets.json
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #cmake-build-*
+
+# END DEFAULT CMAKE IGNORE FROM GITHUB
+
+
+.vs
+out
+CMakePresets.json
