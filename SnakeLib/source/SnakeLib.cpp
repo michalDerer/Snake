@@ -1,50 +1,51 @@
-﻿
+﻿#include <iostream>
+//#include <stdexcept>
+#include <random>
+#include "SnakeLib.hpp"
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#include <iostream>
-#include <stdexcept>
-#include "snake.hpp"
-
-
-
-Bodypart::Bodypart(int x, int y) : x(x), y(y)
+Bodypart::Bodypart(unsigned int x, unsigned int y) : x(x), y(y)
 {
 #ifdef  _DEBUG
-	std::cout << "Bodypart(int x, int y)" << std::endl;
+	std::cout << "Bodypart(int x, int y) " << x << ", " << y << "\n";
 #endif //  _DEBUG
 }
 
-GroundCell::GroundCell(GroundCellState state) : state(state)
+Cell::Cell(const CellStateIDX& o) : state(o)
 {
 #ifdef  _DEBUG
-	std::cout << "GroundCell(GroundCellState state)" << std::endl;
+	std::cout << "Cell(const CellStateIDX& o)" << "\n";
+#endif //  _DEBUG
+}
+
+Cell::Cell(CellStateIDX&& o) : state(o)
+{
+#ifdef  _DEBUG
+	std::cout << "Cell(CellStateIDX&& o)" << "\n";
+#endif //  _DEBUG
+}
+
+CellStateIDX Cell::get_state() const
+{
+	return state;
+}
+
+Dimensions::Dimensions(unsigned int x, unsigned y) : x_size(x), y_size(y)
+{
+#ifdef  _DEBUG
+	std::cout << "Dimensions(unsigned int x, unsigned y) " << x << ", " << y << "\n";
 #endif //  _DEBUG
 }
 
 SnakeGame::SnakeGame(const Dimensions& o)
 {
 #ifdef  _DEBUG
-	std::cout << "SnakeGame(const Dimensions& o)" << std::endl;
+	std::cout << "SnakeGame(const Dimensions& o)" << "\n";
 #endif //  _DEBUG
 
 	if (o.x_size == 0 || o.y_size == 0)
 	{
-		throw std::runtime_error("Invalid playground dimensions");
+		throw std::runtime_error("Invalid ground dimensions");
 	}
 
 	dimensions.x_size = o.x_size;
@@ -56,12 +57,12 @@ SnakeGame::SnakeGame(const Dimensions& o)
 SnakeGame::SnakeGame(Dimensions&& o) : dimensions(std::move(o))
 {
 #ifdef _DEBUG
-	std::cout << "SnakeGame(Dimensions&& o)" << std::endl;
+	std::cout << "SnakeGame(Dimensions&& o)" << "\n";
 #endif // DEBUG
 
 	if (dimensions.x_size == 0 || dimensions.y_size == 0)
 	{
-		throw std::runtime_error("Invalid playground dimensions");
+		throw std::runtime_error("Invalid ground dimensions");
 	}
 
 	init();
@@ -70,7 +71,7 @@ SnakeGame::SnakeGame(Dimensions&& o) : dimensions(std::move(o))
 SnakeGame::~SnakeGame()
 {
 #ifdef _DEBUG
-	std::cout << "~SnakeGame()" << std::endl;
+	std::cout << "~SnakeGame()" << "\n";
 #endif // DEBUG
 
 	destroy();
@@ -78,22 +79,17 @@ SnakeGame::~SnakeGame()
 
 void SnakeGame::create_ground()
 {
-	ground = new GroundCell * [dimensions.x_size] {};
+	ground = new Cell*[dimensions.x_size]{};
 
-	for (unsigned int i = 0; i < dimensions.x_size; ++i)
+	for (unsigned int i = 0; i < dimensions.x_size; i++)
 	{
-		ground[i] = new GroundCell[dimensions.y_size]{};
-
-		for (unsigned int j = 0; j < dimensions.y_size; ++j)
-		{
-			ground[i][j] = GroundCell(FOOD);
-		}
+		ground[i] = new Cell[dimensions.y_size]{};
 	}
 }
 
 void SnakeGame::destroy_ground()
 {
-	for (unsigned int i = 0; i < dimensions.x_size; ++i)
+	for (unsigned int i = 0; i < dimensions.x_size; i++)
 	{
 		delete[] ground[i];
 		ground[i] = nullptr;
@@ -110,11 +106,16 @@ void SnakeGame::create_snake()
 
 void SnakeGame::destroy_snake()
 {
+	snake.clear();
 }
 
 void SnakeGame::init()
 {
 	std::srand(std::time({}));
+
+	gen = std::mt19937(rd());											// Create a random number engine
+	//dist = std::uniform_int_distribution<unsigned int>(0, UINT32_MAX);	// Define the distribution range
+	dist = std::uniform_int_distribution<unsigned int>(0, 10);
 
 	create_ground();
 	create_snake();
@@ -141,131 +142,8 @@ void SnakeGame::update()
 
 }
 
-int SnakeGame::random(int range)
+unsigned int SnakeGame::random(unsigned int range)
 {
-	return std::rand() % range;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//----------------------------------------------------------------------------
-
-
-#include <iostream>
-#include "SnakeLib.hpp"
-
-
-#define out(s1) std::cout << s1 << "\n"
-
-TestData::TestData()
-{
-	out("TestData()");
-}
-
-TestData::TestData(int x, int y) : x(x), y(y)
-{
-	std::cout << "TestData(int x, int y) " << x << " " << y << "\n";
-}
-
-TestData::~TestData()
-{
-	std::cout << "~TestData()" << "\n";
-}
-
-int TestData::get_x() const
-{
-	return x;
-}
-
-void TestData::set_x(int v)
-{
-	x = v;
-}
-
-int TestData::get_y() const
-{
-	return y;
-}
-
-void TestData::set_y(int v)
-{
-	y = v;
-}
-
-TestLib::TestLib()
-{
-	out("TestLib()");
-
-	data = new TestData**[2]{};
-
-	for (int i = 0; i < 2; i++)
-	{
-		data[i] = new TestData*[2]{};
-
-		for (int j = 0; j < 2; j++)
-		{
-			data[i][j] = new TestData{i,j};
-		}
-	}
-}
-
-TestLib::~TestLib()
-{
-	out("~TestLib()");
-
-	for (int i = 0; i < 2; i++)
-		for (int j = 0; j < 2; j++)
-		{
-			delete data[i][j];
-			data[i][j] = nullptr;
-		}
-
-	for (int i = 0; i < 2; i++)
-	{
-		delete[] data[i];
-		data[i] = nullptr;
-	}
-
-	delete[] data;
-	data = nullptr;
-}
-
-const ITestDataPublic***& TestLib::get_data() const
-{
-	return (const ITestDataPublic***&)data;
-}
-
-//const ITestDataPublic& TestLib::get_data(int x, int y) const
-//{
-//	return data[x][y];
-//}
-
-void TestLib::message()
-{
-	std::cout << "Snake LIB." << "\n";
+	//return std::rand() % range;
+	return dist(gen);
 }

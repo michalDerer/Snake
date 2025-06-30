@@ -1,17 +1,24 @@
 ﻿#pragma once
 
-
-
-
-
-
-
-
-
-
-
-
 #include <forward_list>
+#include <random>
+#include <stdint.h>
+
+enum CellStateIDX : unsigned char
+{
+	EMPTY = 0,
+	FOOD = 1,
+	SNAKE_BODY = 2,
+	SNAKE_HEAD = 3
+};
+
+enum Direction : unsigned char
+{
+	LEFT = 0,
+	TOP = 1,
+	RIGHT = 2,
+	BOTTOM = 3
+};
 
 struct Bodypart
 {
@@ -19,39 +26,48 @@ struct Bodypart
 	unsigned int y;
 
 	Bodypart() = default;
-	Bodypart(int x, int y);
+	Bodypart(unsigned int x, unsigned int y);
 };
 
-enum GroundCellState
+
+class ICellPublic
 {
-	EMPTY = 0x0,
-	FOOD = 0x1,
-	SNAKE_BODY = 0x2,
-	SNAKE_HEAD = 0x3
+public:
+	virtual CellStateIDX get_state() const = 0;
 };
 
-struct GroundCell
+struct Cell : public ICellPublic
 {
-	GroundCellState state = EMPTY;
+	CellStateIDX state = EMPTY;
 
-	GroundCell() = default;
-	GroundCell(GroundCellState state);
+	Cell() = default;
+	Cell(const CellStateIDX& state);
+	Cell(CellStateIDX&& state);
+
+public:
+	CellStateIDX get_state() const override;
 };
 
 struct Dimensions
 {
 	unsigned int x_size = 0;
 	unsigned int y_size = 0;
+
+	Dimensions(unsigned int x, unsigned y);
 };
 
 class SnakeGame
 {
 private:
 
-	Dimensions dimensions{};
+	std::random_device rd;								// Seed
+	std::mt19937 gen;									// Mersenne Twister engine
+	std::uniform_int_distribution<unsigned int> dist;	// Define the distribution range
+
+	Dimensions dimensions{1, 1};
 	unsigned int score = 0;
 
-	GroundCell** ground = nullptr;
+	Cell** ground = nullptr;
 	std::forward_list<Bodypart> snake{};
 
 
@@ -66,7 +82,6 @@ private:
 	void init();
 	void destroy();
 
-	//int random(int range);
 
 public:
 
@@ -83,80 +98,5 @@ public:
 
 	void update();
 
-	int random(int range);
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//--------------------------------------------------------
-
-class ITestDataPublic
-{
-public:
-	virtual int get_x() const = 0;
-
-	virtual int get_y() const = 0;
-};
-
-class TestData : public ITestDataPublic
-{
-	int y = 0;
-
-public:
-	int x = 0;
-	TestData();
-	TestData(int x, int y);
-	~TestData();
-
-	int get_x() const override;
-	void set_x(int v);
-
-	int get_y() const override;
-	void set_y(int v);
-};
-
-class TestLib
-{
-	TestData*** data = nullptr;
-
-
-public:
-	TestLib();
-	~TestLib();
-
-	const ITestDataPublic***& get_data() const;
-	//const ITestDataPublic& get_data(int x, int y) const;
-
-	const int** get_xarr() 
-	{ 
-		int** s = new int*[2] {};
-		
-		for (int i = 0; i < 2; i++)
-		{
-			s[i] = new int[2] {};
-			for (int j = 0; j < 2; j++)
-				s[i][j] = j;
-		}
-
-		return (const int**)s; 
-	};
-
-	void message();
-
+	unsigned int random(unsigned int range);
 };
