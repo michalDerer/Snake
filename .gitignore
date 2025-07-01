@@ -26,3 +26,4 @@ CMakeUserPresets.json
 .vs
 out
 CMakePresets.json
+CMakeSettings.json
