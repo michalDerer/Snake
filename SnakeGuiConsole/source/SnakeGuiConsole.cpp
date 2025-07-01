@@ -164,35 +164,43 @@
 
 //input
 
-int main() {
-    HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
-    DWORD mode;
-    GetConsoleMode(hInput, &mode);
-    SetConsoleMode(hInput, mode & ~(ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT)); // raw input mode
+//int main() 
+//{
+//    HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
+//    DWORD mode;
+//    GetConsoleMode(hInput, &mode);
+//    SetConsoleMode(hInput, mode & ~(ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT)); // raw input mode
+//
+//    INPUT_RECORD inputRecord;
+//    DWORD events;
+//    bool running = true;
+//
+//    std::cout << "Press arrow keys or Q to quit.\n";
+//
+//    while (running) {
+//        ReadConsoleInput(hInput, &inputRecord, 1, &events);
+//
+//        if (inputRecord.EventType == KEY_EVENT && inputRecord.Event.KeyEvent.bKeyDown) {
+//            switch (inputRecord.Event.KeyEvent.wVirtualKeyCode) {
+//            case VK_LEFT:
+//                std::cout << "LEFT\n";
+//                break;
+//            case VK_RIGHT:
+//                std::cout << "RIGHT\n";
+//                break;
+//            case 'Q':
+//                running = false;
+//                break;
+//            }
+//        }
+//    }
+//
+//    return 0;
+//}
 
-    INPUT_RECORD inputRecord;
-    DWORD events;
-    bool running = true;
+#include "SnakeLib.hpp"
 
-    std::cout << "Press arrow keys or Q to quit.\n";
-
-    while (running) {
-        ReadConsoleInput(hInput, &inputRecord, 1, &events);
-
-        if (inputRecord.EventType == KEY_EVENT && inputRecord.Event.KeyEvent.bKeyDown) {
-            switch (inputRecord.Event.KeyEvent.wVirtualKeyCode) {
-            case VK_LEFT:
-                std::cout << "LEFT\n";
-                break;
-            case VK_RIGHT:
-                std::cout << "RIGHT\n";
-                break;
-            case 'Q':
-                running = false;
-                break;
-            }
-        }
-    }
-
-    return 0;
+int main()
+{
+    SnakeGame game{ Dimensions{1,1} };
 }

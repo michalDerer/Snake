@@ -4,12 +4,26 @@
 #include "SnakeLib.hpp"
 
 
-Bodypart::Bodypart(unsigned int x, unsigned int y) : x(x), y(y)
+Dimensions::Dimensions(unsigned int x, unsigned y) : x_size(x), y_size(y)
 {
 #ifdef  _DEBUG
-	std::cout << "Bodypart(int x, int y) " << x << ", " << y << "\n";
+	std::cout << "Dimensions(unsigned int x, unsigned y) " << x << ", " << y << "\n";
 #endif //  _DEBUG
 }
+
+//Position::Position(unsigned int x, unsigned y) : x(x), y(y)
+//{
+//#ifdef  _DEBUG
+//	std::cout << "Position(unsigned int x, unsigned y) " << x << ", " << y << "\n";
+//#endif //  _DEBUG
+//}
+
+//Bodypart::Bodypart(unsigned int x, unsigned int y) : x(x), y(y)
+//{
+//#ifdef  _DEBUG
+//	std::cout << "Bodypart(int x, int y) " << x << ", " << y << "\n";
+//#endif //  _DEBUG
+//}
 
 Cell::Cell(const CellStateIDX& o) : state(o)
 {
@@ -25,17 +39,10 @@ Cell::Cell(CellStateIDX&& o) : state(o)
 #endif //  _DEBUG
 }
 
-CellStateIDX Cell::get_state() const
-{
-	return state;
-}
-
-Dimensions::Dimensions(unsigned int x, unsigned y) : x_size(x), y_size(y)
-{
-#ifdef  _DEBUG
-	std::cout << "Dimensions(unsigned int x, unsigned y) " << x << ", " << y << "\n";
-#endif //  _DEBUG
-}
+//CellStateIDX Cell::get_state() const
+//{
+//	return state;
+//}
 
 SnakeGame::SnakeGame(const Dimensions& o)
 {
@@ -51,7 +58,7 @@ SnakeGame::SnakeGame(const Dimensions& o)
 	dimensions.x_size = o.x_size;
 	dimensions.y_size = o.y_size;
 
-	init();
+	init_area();
 }
 
 SnakeGame::SnakeGame(Dimensions&& o) : dimensions(std::move(o))
@@ -65,7 +72,7 @@ SnakeGame::SnakeGame(Dimensions&& o) : dimensions(std::move(o))
 		throw std::runtime_error("Invalid ground dimensions");
 	}
 
-	init();
+	init_area();
 }
 
 SnakeGame::~SnakeGame()
@@ -74,57 +81,35 @@ SnakeGame::~SnakeGame()
 	std::cout << "~SnakeGame()" << "\n";
 #endif // DEBUG
 
-	destroy();
+	destroy_area();
 }
 
-void SnakeGame::create_ground()
+void SnakeGame::init_area()
 {
-	ground = new Cell*[dimensions.x_size]{};
+	area = new Cell * [dimensions.x_size] {};
 
 	for (unsigned int i = 0; i < dimensions.x_size; i++)
 	{
-		ground[i] = new Cell[dimensions.y_size]{};
+		area[i] = new Cell[dimensions.y_size]{};
+
+		for (unsigned int j = 0; j < dimensions.y_size; j++)
+		{
+			area[i][j].x = i;
+			area[i][j].y = j;
+		}
 	}
 }
 
-void SnakeGame::destroy_ground()
+void SnakeGame::destroy_area()
 {
 	for (unsigned int i = 0; i < dimensions.x_size; i++)
 	{
-		delete[] ground[i];
-		ground[i] = nullptr;
+		delete[] area[i];
+		area[i] = nullptr;
 	}
 
-	delete[] ground;
-	ground = nullptr;
-}
-
-void SnakeGame::create_snake()
-{
-	snake.emplace_front(Bodypart{ random(dimensions.x_size), random(dimensions.y_size) });
-}
-
-void SnakeGame::destroy_snake()
-{
-	snake.clear();
-}
-
-void SnakeGame::init()
-{
-	std::srand(std::time({}));
-
-	gen = std::mt19937(rd());											// Create a random number engine
-	//dist = std::uniform_int_distribution<unsigned int>(0, UINT32_MAX);	// Define the distribution range
-	dist = std::uniform_int_distribution<unsigned int>(0, 10);
-
-	create_ground();
-	create_snake();
-}
-
-void SnakeGame::destroy()
-{
-	destroy_snake();
-	destroy_ground();
+	delete[] area;
+	area = nullptr;
 }
 
 Dimensions SnakeGame::get_dimensions() const
@@ -139,11 +124,64 @@ unsigned int SnakeGame::get_score() const
 
 void SnakeGame::update()
 {
+	Cell* next_cell = nullptr;
 
+	switch (snake_direction)
+	{
+	case UNDEFINED:
+		return;
+
+	case LEFT:
+		if (snake_head->x == 0)
+		{
+			next_cell = &area[dimensions.x_size - 1][snake_head->y];
+		}
+		else
+		{
+			next_cell = &area[snake_head->x - 1][snake_head->y];
+		}
+		break;
+
+	case TOP:
+		if (snake_head->y == 0)
+		{
+			next_cell = &area[snake_head->x][dimensions.y_size - 1];
+		}
+		else
+		{
+			next_cell = &area[snake_head->x][snake_head->y - 1];
+		}
+		break;
+
+	case RIGHT:
+		if (snake_head->x + 1 == dimensions.x_size)
+		{
+			next_cell = &area[0][snake_head->y];
+		}
+		else
+		{
+			next_cell = &area[snake_head->x + 1][snake_head->y];
+		}
+		break;
+
+	case BOTTOM:
+		if (snake_head->y + 1 == dimensions.y_size)
+		{
+			next_cell = &area[snake_head->x][0];
+		}
+		else
+		{
+			next_cell = &area[snake_head->x][snake_head->y + 1];
+		}
+		break;
+
+	default:
+		break;
+	}
 }
 
-unsigned int SnakeGame::random(unsigned int range)
+CellStateIDX SnakeGame::get_cell_state_idx(unsigned int x, unsigned int y) const
 {
-	//return std::rand() % range;
-	return dist(gen);
+	return area[x][y].state;
 }
+
