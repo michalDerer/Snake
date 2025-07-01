@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include <vector>
+
 enum CellStateIDX : unsigned char
 {
 	EMPTY = 0,
@@ -8,7 +10,7 @@ enum CellStateIDX : unsigned char
 	SNAKE_HEAD = 3
 };
 
-enum Direction : char
+enum Direction : unsigned char
 {
 	UNDEFINED = 0,
 	LEFT = 1,
@@ -22,89 +24,64 @@ struct Dimensions
 	unsigned int x_size = 0;
 	unsigned int y_size = 0;
 
+	Dimensions() = default;
 	Dimensions(unsigned int x, unsigned y);
 };
 
-//struct Position
-//{
-//	unsigned int x = 0;
-//	unsigned int y = 0;
-//
-//	Position(unsigned int x, unsigned y);
-//};
-
-//struct Bodypart
-//{
-//	unsigned int x;
-//	unsigned int y;
-//
-//	Bodypart() = default;
-//	Bodypart(unsigned int x, unsigned int y);
-//};
-
-
-//class ICellPublic
-//{
-//public:
-//	virtual CellStateIDX get_state() const = 0;
-//};
-
-struct Cell //: public ICellPublic
+struct Cell
 {
 	CellStateIDX state = EMPTY;
 
 	unsigned int x = 0;
 	unsigned int y = 0;
 
-	Cell* snake_next_to_tail = NULL;
-	Cell* snake_next_to_head = NULL;
+	Cell* snake_next_to_tail = nullptr;
+	Cell* snake_next_to_head = nullptr;
 
-	Cell() = default;
-	Cell(const CellStateIDX& state);
-	Cell(CellStateIDX&& state);
-
-public:
-	//CellStateIDX get_state() const override;
+	//Cell() = default;
+	Cell();
+	Cell(const CellStateIDX& state) = delete;
+	Cell(CellStateIDX&& state) = delete;
 };
-
 
 
 class SnakeGame
 {
 private:
 
-	Dimensions dimensions{1, 1};
 	unsigned int score = 0;
 
 	Cell* snake_head = nullptr;
 	Cell* snake_tail = nullptr;
-
 	Direction snake_direction = UNDEFINED;
 
-	Cell** area = nullptr;
+	Cell* food = nullptr;
 
+	Dimensions dimensions{1, 1};
+	Cell** area = nullptr;
+	std::vector<Cell*>* empty_area;
 
 private:
 
 	void init_area();
 	void destroy_area();
 
+	void place_food();
+	void place_snake_head();
 
 public:
 
 	SnakeGame() = delete;
 	SnakeGame(const SnakeGame& o) = delete;
-
 	SnakeGame(const Dimensions& o);
 	SnakeGame(Dimensions&& o);
 	~SnakeGame();
 
-
 	Dimensions get_dimensions() const;
+	CellStateIDX get_cell_state_idx(unsigned int x, unsigned int y) const;
 	unsigned int get_score() const;
 
-	void update();
+	void set_snake_direction(Direction direction);
 
-	CellStateIDX get_cell_state_idx(unsigned int x, unsigned int y) const;
-
+	int move_snake();
 };

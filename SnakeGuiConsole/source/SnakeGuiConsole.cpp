@@ -202,5 +202,31 @@
 
 int main()
 {
-    SnakeGame game{ Dimensions{1,1} };
+    try
+    {
+        //ocekovat konstruktory
+        //Dimensions{}
+        //Cell
+        
+        SnakeGame game{ Dimensions{2,2} };
+        
+        game.set_direction(TOP);
+        
+        std::cout << game.update() << game.get_score() <<  "\n";
+        
+        game.set_direction(RIGHT);
+
+        std::cout << game.update() << game.get_score() << "\n";
+
+        game.set_direction(TOP);
+
+        std::cout << game.update() << game.get_score() << "\n";
+
+    }
+    catch (std::exception e)
+    {
+        std::cout << e.what() << "\n";
+    }
+
+
 }
