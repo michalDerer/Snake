@@ -210,18 +210,18 @@ int main()
         //Dimensions{}
         //Cell
 
-        Dimensions dimensions(2,2);
+        Dimensions dimensions(2, 2);
         SnakeGame game(dimensions);
 
-        print(game, dimensions);
+        draw_game_state(game, dimensions, evaluate_complex);
         game.set_snake_direction(TOP);
         std::cout << game.snake_move() << " " << game.get_score() <<  "\n";
 
-        print(game, dimensions);
+        draw_game_state(game, dimensions, evaluate_complex);
         game.set_snake_direction(RIGHT);
         std::cout << game.snake_move() << " " << game.get_score() << "\n";
 
-        print(game, dimensions);
+        draw_game_state(game, dimensions, evaluate_complex);
         game.set_snake_direction(TOP);
         std::cout << game.snake_move() << " " << game.get_score() << "\n";
 

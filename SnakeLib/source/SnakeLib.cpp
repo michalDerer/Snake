@@ -9,11 +9,49 @@ Dimensions::Dimensions(unsigned int x, unsigned y) : x_size(x), y_size(y)
 #endif //  _DEBUG
 }
 
+Dimensions::~Dimensions()
+{
+#ifdef  _DEBUG
+	std::cout << "~Dimensions() " << x_size << " " << y_size << "\n";
+#endif //  _DEBUG
+}
+
 Cell::Cell()
 {
 #ifdef  _DEBUG
 	std::cout << "Cell()" << "\n";
 #endif //  _DEBUG
+}
+
+Cell::~Cell()
+{
+#ifdef  _DEBUG
+	std::cout << "~Cell()" << "\n";
+#endif //  _DEBUG
+}
+
+const CellStateIDX Cell::get_state() const
+{
+	return state;
+}
+
+const unsigned int Cell::get_x() const
+{
+	return x;
+}
+const unsigned int Cell::get_y() const
+{
+	return y;
+}
+
+const CellPublic& Cell::get_snake_next_to_head() const
+{
+	return *snake_next_to_head;
+}
+
+const CellPublic& Cell::get_snake_next_to_tail() const
+{
+	return *snake_next_to_tail;
 }
 
 SnakeGame::SnakeGame(const Dimensions& o)
@@ -139,9 +177,14 @@ const unsigned int SnakeGame::get_score() const
 	return score;
 }
 
-const CellStateIDX SnakeGame::get_area_cellstate_idx(unsigned int x, unsigned int y) const
+const CellStateIDX SnakeGame::get_area_cell_state(unsigned int x, unsigned int y) const
 {
 	return area[x][y].state;
+}
+
+const CellPublic& SnakeGame::get_snake_head() const
+{
+	return *snake_head;
 }
 
 void SnakeGame::set_snake_direction(Direction direction)
