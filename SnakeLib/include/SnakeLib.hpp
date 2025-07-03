@@ -6,8 +6,8 @@ enum CellStateIDX : unsigned char
 {
 	EMPTY = 0,
 	FOOD = 1,
-	SNAKE_BODY = 2,
-	SNAKE_HEAD = 3
+	SNAKE_HEAD = 2,
+	SNAKE_BODY = 3,
 };
 
 enum Direction : unsigned char
@@ -77,11 +77,11 @@ public:
 	SnakeGame(Dimensions&& o);
 	~SnakeGame();
 
-	Dimensions get_dimensions() const;
-	CellStateIDX get_cell_state_idx(unsigned int x, unsigned int y) const;
-	unsigned int get_score() const;
+	const Dimensions get_area_dimensions() const;
+	const CellStateIDX get_area_cellstate_idx(unsigned int x, unsigned int y) const;
+	const unsigned int get_score() const;
 
 	void set_snake_direction(Direction direction);
 
-	int move_snake();
+	int snake_move();
 };

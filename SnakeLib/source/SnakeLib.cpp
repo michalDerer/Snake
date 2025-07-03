@@ -67,8 +67,9 @@ SnakeGame::~SnakeGame()
 
 void SnakeGame::init_area()
 {
-	//empty_area = new std::vector<Cell*>(dimensions.x_size * dimensions.y_size);
-	empty_area = new std::vector<Cell*>(/*dimensions.x_size * dimensions.y_size*/);
+	empty_area = new std::vector<Cell*>(/* dimensions.x_size * dimensions.y_size */);
+	empty_area->reserve(dimensions.x_size * dimensions.y_size);
+
 	area = new Cell * [dimensions.x_size] {};
 	for (unsigned int i = 0; i < dimensions.x_size; i++)
 	{
@@ -128,17 +129,17 @@ void SnakeGame::place_snake_head()
 	snake_head->state = SNAKE_HEAD;
 }
 
-Dimensions SnakeGame::get_dimensions() const
+const Dimensions SnakeGame::get_area_dimensions() const
 {
 	return dimensions;
 }
 
-unsigned int SnakeGame::get_score() const
+const unsigned int SnakeGame::get_score() const
 {
 	return score;
 }
 
-CellStateIDX SnakeGame::get_cell_state_idx(unsigned int x, unsigned int y) const
+const CellStateIDX SnakeGame::get_area_cellstate_idx(unsigned int x, unsigned int y) const
 {
 	return area[x][y].state;
 }
@@ -156,7 +157,7 @@ void SnakeGame::set_snake_direction(Direction direction)
 ///		1 - undefined snake direction,
 ///		2 - game stopped GAME OVER 
 /// </returns>
-int SnakeGame::move_snake()
+int SnakeGame::snake_move()
 {
 	Cell* next_cell = nullptr;
 
@@ -240,7 +241,6 @@ int SnakeGame::move_snake()
 			snake_head = next_cell;
 
 			snake_tail->state = EMPTY;
-			//snake_tail->snake_next_to_head->state = EMPTY;
 			snake_tail = snake_tail->snake_next_to_head;
 			snake_tail->snake_next_to_tail->snake_next_to_head = nullptr;
 			snake_tail->snake_next_to_tail = nullptr;

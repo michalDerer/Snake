@@ -198,29 +198,32 @@
 //    return 0;
 //}
 
-#include "SnakeLib.hpp"
+#include "SnakeGuiConsole.hpp"
 
 int main()
 {
+    SetConsoleOutputCP(CP_UTF8);
+
     try
     {
         //ocekovat konstruktory
         //Dimensions{}
         //Cell
-        
-        SnakeGame game{ Dimensions{2,2} };
-        
-        game.set_direction(TOP);
-        
-        std::cout << game.update() << game.get_score() <<  "\n";
-        
-        game.set_direction(RIGHT);
 
-        std::cout << game.update() << game.get_score() << "\n";
+        Dimensions dimensions(2,2);
+        SnakeGame game(dimensions);
 
-        game.set_direction(TOP);
+        print(game, dimensions);
+        game.set_snake_direction(TOP);
+        std::cout << game.snake_move() << " " << game.get_score() <<  "\n";
 
-        std::cout << game.update() << game.get_score() << "\n";
+        print(game, dimensions);
+        game.set_snake_direction(RIGHT);
+        std::cout << game.snake_move() << " " << game.get_score() << "\n";
+
+        print(game, dimensions);
+        game.set_snake_direction(TOP);
+        std::cout << game.snake_move() << " " << game.get_score() << "\n";
 
     }
     catch (std::exception e)
