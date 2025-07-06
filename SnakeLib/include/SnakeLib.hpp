@@ -37,8 +37,8 @@ struct CellPublic
 	virtual const unsigned int get_x() const = 0;
 	virtual const unsigned int get_y() const = 0;
 
-	virtual const CellPublic& get_snake_next_to_head() const = 0;
-	virtual const CellPublic& get_snake_next_to_tail() const = 0;
+	virtual const CellPublic* get_snake_next_to_head() const = 0;
+	virtual const CellPublic* get_snake_next_to_tail() const = 0;
 };
 
 struct Cell : public CellPublic
@@ -63,8 +63,8 @@ struct Cell : public CellPublic
 	const unsigned int get_x() const override;
 	const unsigned int get_y() const override;
 
-	const CellPublic& get_snake_next_to_head() const override;
-	const CellPublic& get_snake_next_to_tail() const override;
+	const CellPublic* get_snake_next_to_head() const override;
+	const CellPublic* get_snake_next_to_tail() const override;
 };
 
 class SnakeGame
@@ -101,7 +101,7 @@ public:
 
 	const Dimensions get_area_dimensions() const;
 	const CellStateIDX get_area_cell_state(unsigned int x, unsigned int y) const;
-	const CellPublic& get_snake_head() const;
+	const CellPublic* get_snake_head() const;
 	const unsigned int get_score() const;
 
 	void set_snake_direction(Direction direction);

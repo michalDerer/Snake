@@ -44,14 +44,14 @@ const unsigned int Cell::get_y() const
 	return y;
 }
 
-const CellPublic& Cell::get_snake_next_to_head() const
+const CellPublic* Cell::get_snake_next_to_head() const
 {
-	return *snake_next_to_head;
+	return snake_next_to_head;
 }
 
-const CellPublic& Cell::get_snake_next_to_tail() const
+const CellPublic* Cell::get_snake_next_to_tail() const
 {
-	return *snake_next_to_tail;
+	return snake_next_to_tail;
 }
 
 SnakeGame::SnakeGame(const Dimensions& o)
@@ -182,9 +182,9 @@ const CellStateIDX SnakeGame::get_area_cell_state(unsigned int x, unsigned int y
 	return area[x][y].state;
 }
 
-const CellPublic& SnakeGame::get_snake_head() const
+const CellPublic* SnakeGame::get_snake_head() const
 {
-	return *snake_head;
+	return snake_head;
 }
 
 void SnakeGame::set_snake_direction(Direction direction)
