@@ -259,23 +259,41 @@ int SnakeGame::snake_move()
 		break;
 	}
 
-	//TODO: dorobit do pohybu hada update empty area
-
 	switch (next_cell->state)
 	{
 	case EMPTY:
 		if (snake_head->snake_next_to_tail == nullptr)
 		{
-			//snake head bez tela, posun hlavy
+			//snake head bez tela, len posun hlavu, update empty area
 
 			next_cell->state = SNAKE_HEAD;
 			snake_head->state = EMPTY;
+
+			auto found = std::find_if(empty_area->begin(), empty_area->end(), [&next_cell](Cell* c)
+				{
+					return c->x == next_cell->x && c->y == next_cell->y;
+				});
+			//ak nenastane zhoda vrati iterator na posledny prvok
+			if (found != empty_area->end())
+			{
+				empty_area->erase(found);
+			}
+			else
+			{
+				//vratilo iterator na posledny prvok, treba overit ci je zhoda
+				if ((*found)->x == next_cell->x && (*found)->y == next_cell->y)
+				{
+					empty_area->erase(found);
+				}
+			}
+			empty_area->push_back(snake_head);
+
 			snake_head = next_cell;
 			snake_tail = next_cell;
 		}
 		else
 		{
-			//snake head s telom, posun hlavy a chvostu
+			//snake head s telom, posun hlavy, chvostu a update empty area
 
 			next_cell->state = SNAKE_HEAD;
 			snake_head->state = SNAKE_BODY;
@@ -291,6 +309,7 @@ int SnakeGame::snake_move()
 		break;
 		
 	case FOOD:
+		//netreba update empty area, food je odobraty z empty are, food sa zmeni na snake head
 		food = nullptr;
 		score++;
 
