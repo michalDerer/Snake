@@ -51,7 +51,7 @@
 //    COORD homeCoords = { 0, 0 };
 //
 //    DWORD events = 0;
-//    INPUT_RECORD inputRecord;
+//    INPUT_RECORD inputRecords;
 //
 //
 //    //std::cout << "This will be cleared in 3 seconds..." << std::endl;
@@ -90,11 +90,11 @@
 //    //    Sleep(1000);
 //
 //
-//        //ReadConsoleInput(hInput, &inputRecord, 1, &events);
+//        //ReadConsoleInput(hInput, &inputRecords, 1, &events);
 //
-//        //if (inputRecord.EventType == KEY_EVENT && inputRecord.Event.KeyEvent.bKeyDown) {
-//        //    char ch = inputRecord.Event.KeyEvent.uChar.AsciiChar;
-//        //    int vk = inputRecord.Event.KeyEvent.wVirtualKeyCode;
+//        //if (inputRecords.EventType == KEY_EVENT && inputRecords.Event.KeyEvent.bKeyDown) {
+//        //    char ch = inputRecords.Event.KeyEvent.uChar.AsciiChar;
+//        //    int vk = inputRecords.Event.KeyEvent.wVirtualKeyCode;
 //
 //        //    //std::cout << "Key pressed: " << ch << " (VK: " << vk << ")\n";
 //
@@ -110,10 +110,10 @@
 
 
 
-
-#include <iostream>
-#include <conio.h>
-#include <windows.h>
+//
+//#include <iostream>
+//#include <conio.h>
+//#include <windows.h>
 
 //redraw
 
@@ -162,74 +162,193 @@
 //}
 
 
-//input
 
+////---------------------------------------------------------------------------------------------
+//#include <iostream>
+//#include <windows.h>
+//#include <array>
+//
 //int main() 
 //{
 //    HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
 //    DWORD mode;
 //    GetConsoleMode(hInput, &mode);
-//    SetConsoleMode(hInput, mode & ~(ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT)); // raw input mode
+//    SetConsoleMode(hInput, mode & ~(ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT));
 //
-//    INPUT_RECORD inputRecord;
-//    DWORD events;
-//    bool running = true;
+//    std::array<INPUT_RECORD, 1> inputRecords;
+//    DWORD inputRecordsReaded;
+//    bool isRunning = true;
 //
 //    std::cout << "Press arrow keys or Q to quit.\n";
 //
-//    while (running) {
-//        ReadConsoleInput(hInput, &inputRecord, 1, &events);
+//    while (isRunning) 
+//    {
+//        DWORD result = ReadConsoleInput(hInput, inputRecords.data(), inputRecords.size(), &inputRecordsReaded);
 //
-//        if (inputRecord.EventType == KEY_EVENT && inputRecord.Event.KeyEvent.bKeyDown) {
-//            switch (inputRecord.Event.KeyEvent.wVirtualKeyCode) {
-//            case VK_LEFT:
-//                std::cout << "LEFT\n";
-//                break;
-//            case VK_RIGHT:
-//                std::cout << "RIGHT\n";
-//                break;
-//            case 'Q':
-//                running = false;
-//                break;
+//        if (!result)
+//        {
+//            std::cout << "ERROR ReadConsoleInput\n";
+//        }
+//        else
+//        {
+//            std::cout << "Readed input records: " << inputRecordsReaded << "\n";
+//
+//            for (int i = 0; i < inputRecordsReaded; i++)
+//            {
+//                if (inputRecords[i].EventType == KEY_EVENT && inputRecords[i].Event.KeyEvent.bKeyDown)
+//                {
+//                    switch (inputRecords[i].Event.KeyEvent.wVirtualKeyCode)
+//                    {
+//                    case VK_LEFT:
+//                        std::cout << "LEFT\n";
+//                        break;
+//                    case VK_RIGHT:
+//                        std::cout << "RIGHT\n";
+//                        break;
+//                    case 'Q':
+//                        isRunning = false;
+//                        break;
+//                    }
+//                }
 //            }
 //        }
 //    }
 //
 //    return 0;
 //}
+////---------------------------------------------------------------------------------------------
 
+
+
+////---------------------------------------------------------------------------------------------
+//#include <windows.h>
+//#include "SnakeGuiConsole.hpp"
+//
+//int main()
+//{
+//    SetConsoleOutputCP(CP_UTF8);
+//
+//    try
+//    {
+//        //ocekovat konstruktory
+//        //Dimensions{}
+//        //Cell
+//
+//        Dimensions dimensions(2, 2);
+//        SnakeGame game(dimensions);
+//
+//        draw_game_state(game, dimensions, evaluate_complex);
+//        game.set_snake_direction(TOP);
+//        std::cout << game.snake_move() << " " << game.get_score() <<  "\n";
+//
+//        draw_game_state(game, dimensions, evaluate_complex);
+//        game.set_snake_direction(RIGHT);
+//        std::cout << game.snake_move() << " " << game.get_score() << "\n";
+//
+//        draw_game_state(game, dimensions, evaluate_complex);
+//        game.set_snake_direction(TOP);
+//        std::cout << game.snake_move() << " " << game.get_score() << "\n";
+//
+//    }
+//    catch (std::exception e)
+//    {
+//        std::cout << e.what() << "\n";
+//    }
+//}
+////---------------------------------------------------------------------------------------------
+
+//#include <chrono>
+#include <thread>
+#include <windows.h>
 #include "SnakeGuiConsole.hpp"
 
 int main()
 {
     SetConsoleOutputCP(CP_UTF8);
 
-    try
+    HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
+    DWORD mode;
+    GetConsoleMode(hInput, &mode);
+    SetConsoleMode(hInput, mode & ~(ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT));
+
+    INPUT_RECORD inputRecord;
+    DWORD inputRecordsReaded;
+    bool isRunning = true;
+    
+    //Dimensions dimensions(2, 2);
+    //SnakeGame game(dimensions);
+
+
+
+    std::cout << "Press arrow keys or Q to quit.\n";
+    //draw_game_state(game, dimensions, evaluate_simple);
+
+
+
+    while (isRunning)
     {
-        //ocekovat konstruktory
-        //Dimensions{}
-        //Cell
+        std::cout << "SLEEP\n";
+        std::this_thread::sleep_for(std::chrono::seconds(1));
 
-        Dimensions dimensions(2, 2);
-        SnakeGame game(dimensions);
 
-        draw_game_state(game, dimensions, evaluate_complex);
-        game.set_snake_direction(TOP);
-        std::cout << game.snake_move() << " " << game.get_score() <<  "\n";
+        /*try 
+        {*/
+            DWORD result = ReadConsoleInput(hInput, &inputRecord, 1, &inputRecordsReaded);
+        
+            if (!result)
+            {
+                std::cout << "ERROR ReadConsoleInput\n";
+            }
+            else
+            {
+                if (inputRecord.EventType == KEY_EVENT && inputRecord.Event.KeyEvent.bKeyDown)
+                {
+                    //std::cout << "CODE: " << inputRecord.Event.KeyEvent.wVirtualKeyCode << "\n";
 
-        draw_game_state(game, dimensions, evaluate_complex);
-        game.set_snake_direction(RIGHT);
-        std::cout << game.snake_move() << " " << game.get_score() << "\n";
+                    switch (inputRecord.Event.KeyEvent.wVirtualKeyCode)
+                    {
+                    case 'W':
+                        std::cout << "W\n";
+                        //game.set_snake_direction(TOP);
+                        break;
 
-        draw_game_state(game, dimensions, evaluate_complex);
-        game.set_snake_direction(TOP);
-        std::cout << game.snake_move() << " " << game.get_score() << "\n";
+                    case 'A':
+                        std::cout << "A\n";
+                        //game.set_snake_direction(LEFT);
+                        break;
 
+                    case 'S':
+                        std::cout << "S\n";
+                        //game.set_snake_direction(BOTTOM);
+                        break;
+
+                    case 'D':
+                        std::cout << "D\n";
+                        //game.set_snake_direction(RIGHT);
+                        break;
+
+                    case 'Q':
+                        isRunning = false;
+                        break;
+
+                    default:
+                        std::cout << "UNDEFINED\n";
+                        break;
+                    }
+                }
+
+            //    std::cout << game.snake_move() << " " << game.get_score() << "\n";
+            //    draw_game_state(game, dimensions, evaluate_simple);
+
+            }
+        /*}
+        catch (std::exception e)
+        {
+            std::cout << e.what() << "\n";
+        }*/
     }
-    catch (std::exception e)
-    {
-        std::cout << e.what() << "\n";
-    }
+
+
 
 
 }

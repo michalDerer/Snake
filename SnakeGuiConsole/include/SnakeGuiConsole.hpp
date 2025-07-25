@@ -1,7 +1,7 @@
 #pragma once
 
 #include <iostream>
-#include <winddi.h>
+//#include <winddi.h>
 #include "SnakeLib.hpp"
 
 // mal by byt source code subor ulozeny v UTF-8 kodovani, 
